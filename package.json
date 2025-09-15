@@ -15,6 +15,7 @@
     "cpp",
     "react-native-phonebook.podspec",
     "!lib/typescript/example",
+    "react-native.config.js",
     "!android/build",
     "!ios/build",
     "!**/__tests__",
