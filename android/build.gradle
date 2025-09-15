@@ -23,6 +23,7 @@ def getExtOrIntegerDefault(name) {
 }
 
 android {
+  namespace "com.reactnativephonebook"
   compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
 
   defaultConfig {
