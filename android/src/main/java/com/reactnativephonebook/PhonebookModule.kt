@@ -7,6 +7,11 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.provider.ContactsContract
+import android.provider.ContactsContract.CommonDataKinds.Phone
+import android.provider.ContactsContract.CommonDataKinds.Email
+import android.provider.ContactsContract.CommonDataKinds.Organization
+import android.provider.ContactsContract.CommonDataKinds.StructuredPostal
+import android.provider.ContactsContract.CommonDataKinds.Event
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.facebook.react.bridge.*
@@ -222,10 +227,10 @@ class PhonebookModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
                     // Get addresses
                     val addresses = JSONArray()
                     val addressCursor: Cursor? = reactApplicationContext.contentResolver.query(
-                        ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI,
+                        ContactsContract.Data.CONTENT_URI,
                         null,
-                        ContactsContract.CommonDataKinds.StructuredPostal.CONTACT_ID + " = ?",
-                        arrayOf(id),
+                        ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
+                        arrayOf(id, StructuredPostal.CONTENT_ITEM_TYPE),
                         null
                     )
 
@@ -255,7 +260,45 @@ class PhonebookModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
                     }
                     contact.put("addresses", addresses)
 
-                    contact.put("birthday", "")
+                    // Get organization
+                    val orgCursor: Cursor? = reactApplicationContext.contentResolver.query(
+                        ContactsContract.Data.CONTENT_URI,
+                        null,
+                        ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
+                        arrayOf(id, Organization.CONTENT_ITEM_TYPE),
+                        null
+                    )
+
+                    orgCursor?.use { oc ->
+                        if (oc.moveToFirst()) {
+                            val organization = oc.getString(oc.getColumnIndexOrThrow(Organization.COMPANY))
+                            val jobTitle = oc.getString(oc.getColumnIndexOrThrow(Organization.TITLE))
+                            if (organization != null && organization.isNotEmpty()) {
+                                contact.put("organization", organization)
+                            }
+                            if (jobTitle != null && jobTitle.isNotEmpty()) {
+                                contact.put("jobTitle", jobTitle)
+                            }
+                        }
+                    }
+
+                    // Get birthday
+                    val birthdayCursor: Cursor? = reactApplicationContext.contentResolver.query(
+                        ContactsContract.Data.CONTENT_URI,
+                        null,
+                        ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ? AND " + Event.TYPE + " = ?",
+                        arrayOf(id, Event.CONTENT_ITEM_TYPE, Event.TYPE_BIRTHDAY.toString()),
+                        null
+                    )
+
+                    birthdayCursor?.use { bc ->
+                        if (bc.moveToFirst()) {
+                            val birthday = bc.getString(bc.getColumnIndexOrThrow(Event.START_DATE))
+                            if (birthday != null && birthday.isNotEmpty()) {
+                                contact.put("birthday", birthday)
+                            }
+                        }
+                    }
 
                     return contact
                 }

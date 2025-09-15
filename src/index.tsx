@@ -35,6 +35,19 @@ export const openPhonebook = (
 };
 
 /**
+ * Simple contact picker that returns a single contact
+ * @returns Promise that resolves with the selected contact or null if cancelled
+ */
+export const pickContact = (): Promise<Contact | null> => {
+  return Phonebook.openPhonebook({}).then((result: PhonebookResult) => {
+    if (result.success && result.contacts && result.contacts.length > 0) {
+      return result.contacts[0];
+    }
+    return null;
+  });
+};
+
+/**
  * Opens the native phonebook/contacts app with a callback
  * @param callback Function to call when contact selection is complete
  * @param options Configuration options for the phonebook picker
@@ -82,6 +95,7 @@ export type {
 
 export default {
   openPhonebook,
+  pickContact,
   openPhonebookWithCallback,
   isPhonebookAvailable,
   requestContactsPermission,

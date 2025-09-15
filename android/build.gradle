@@ -136,10 +136,13 @@ afterEvaluate { project ->
     return
   }
 
-  publishing {
-    publications {
-      release(MavenPublication) {
-        from components.release
+  // Only configure publishing if the release component exists
+  if (project.components.hasProperty("release")) {
+    publishing {
+      publications {
+        release(MavenPublication) {
+          from components.release
+        }
       }
     }
   }
