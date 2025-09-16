@@ -1,6 +1,6 @@
 {
   "name": "react-native-phonebook",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "React Native library to launch phonebook/contacts app and return selected contact details",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
