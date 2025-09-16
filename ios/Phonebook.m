@@ -100,10 +100,6 @@ RCT_EXPORT_METHOD(hasContactsPermission:(RCTPromiseResolveBlock)resolve
     CNContactPickerViewController *contactPicker = [[CNContactPickerViewController alloc] init];
     contactPicker.delegate = self;
     
-    // Configure picker based on options
-    if (options[@"allowMultipleSelection"]) {
-        contactPicker.allowsMultipleSelection = [options[@"allowMultipleSelection"] boolValue];
-    }
     
     // Get the root view controller
     UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
